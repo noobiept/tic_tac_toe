@@ -4,30 +4,42 @@ import Glibc
 func start()
 {
 print( "Hello there!" )
+help()
+
 let map = Map()
+let options = [
+    "q": quit,
+    "r": restart,
+    "h": help
+]
 
 while true
     {
     map.draw()
-    print( "Write the line and column you want to play (for example: \"1 3\" - first line and third column)." )
-    let input = readLine( stripNewline: true )
 
-    if input == "q"
+    let input = readLine( stripNewline: true ) ?? ""
+
+    if let optionsFunc = options[ input ]
         {
-        break
+        optionsFunc()
         }
 
-    var (column, line) = getPlayerMove( input! )
-
-        // user inputs values from 1 to 3, but we work in 0-based values
-    map.play( column - 1, line - 1 )
-
-    (column, line) = getBotMove()
-    map.play( column, line )
-
-    if ( checkGameEnd() )
+    else
         {
-        restart()
+        var (column, line) = getPlayerMove( input )
+
+            // user inputs values from 1 to 3, but we work in 0-based values
+        if map.play( column - 1, line - 1 )
+            {
+                // only continue the game if the player made a valid move
+            (column, line) = getBotMove()
+            map.play( column, line )
+
+            if ( checkGameEnd() )
+                {
+                restart()
+                }
+            }
         }
     }
 }
@@ -45,12 +57,31 @@ func restart()
 }
 
 
+func help()
+{
+print( "Write the line and column you want to play (for example: \"1 3\" - first line and third column)." )
+}
+
+
+func quit()
+{
+exit( 0 );
+}
+
+
+
 func getPlayerMove( input: String ) -> (Int, Int)
 {
 let values = input.characters.split{ $0 == " " }.map( String.init )
 
-let line = Int( values[ 0 ] ) ?? -1
-let column = Int( values[ 1 ] ) ?? -1
+var line = -1
+var column = -1
+
+if values.count >= 2
+    {
+    line = Int( values[ 0 ] ) ?? -1
+    column = Int( values[ 1 ] ) ?? -1
+    }
 
 return (column, line)
 }
@@ -121,23 +152,29 @@ func draw()
         }
     }
 
-func play( column: Int, _ line: Int )
+/**
+ * Make a play. Returns whether the play was valid or not.
+ */
+func play( column: Int, _ line: Int ) -> Bool
     {
     if column < 0 || column > 2 ||
        line   < 0 || line   > 2
         {
-        return
+        print( "Invalid play." )
+        return false
         }
 
     if MAP[ line ][ column ] == 0
         {
         MAP[ line ][ column ] = 1
         print( "Played \(line + 1) \(column + 1) line/column." )
+        return true
         }
 
     else
         {
         print( "Position already taken." )
+        return false
         }
     }
 }

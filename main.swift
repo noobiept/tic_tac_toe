@@ -1,9 +1,11 @@
 import Glibc
 
 
+/*
+ * Start the main game loop.
+ */
 func start()
 {
-print( "Hello there!" )
 help()
 
 let options = [
@@ -56,9 +58,17 @@ Map.clear()
 }
 
 
+/*
+ * Print a help message.
+ */
 func help()
 {
+print( "\nTic-Tac-Toe Game!" )
 print( "Write the line and column you want to play (for example: \"1 3\" - first line and third column)." )
+print( "Available commands: " )
+print( "    q - Quit the program." )
+print( "    r - Restart the game." )
+print( "    h - Print this help message.\n" )
 }
 
 
@@ -66,7 +76,6 @@ func quit()
 {
 exit( 0 );
 }
-
 
 
 func getPlayerMove( input: String ) -> (Int, Int)
@@ -146,7 +155,7 @@ static func draw()
         }
     }
 
-/**
+/*
  * Make a play. Returns whether the play was valid or not.
  */
 static func play( column: Int, _ line: Int, _ position: PositionValue ) -> Bool
@@ -154,7 +163,7 @@ static func play( column: Int, _ line: Int, _ position: PositionValue ) -> Bool
     if column < 0 || column > 2 ||
        line   < 0 || line   > 2
         {
-        print( "Invalid play." )
+        print( "Invalid play. The line/column values need to be between 1 and 3." )
         return false
         }
 

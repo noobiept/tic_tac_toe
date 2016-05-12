@@ -6,7 +6,6 @@ func start()
 print( "Hello there!" )
 help()
 
-let map = Map()
 let options = [
     "q": quit,
     "r": restart,
@@ -15,7 +14,7 @@ let options = [
 
 while true
     {
-    map.draw()
+    Map.draw()
 
     let input = readLine( stripNewline: true ) ?? ""
 
@@ -29,11 +28,11 @@ while true
         var (column, line) = getPlayerMove( input )
 
             // user inputs values from 1 to 3, but we work in 0-based values
-        if map.play( column - 1, line - 1 )
+        if Map.play( column - 1, line - 1, Map.PositionValue.Human )
             {
                 // only continue the game if the player made a valid move
             (column, line) = getBotMove()
-            map.play( column, line )
+            Map.play( column, line, Map.PositionValue.Bot )
 
             if ( checkGameEnd() )
                 {
@@ -53,7 +52,7 @@ return false
 
 func restart()
 {
-
+Map.clear()
 }
 
 
@@ -104,13 +103,19 @@ return Int( random() % (max - min + 1) ) + min
 
 class Map
 {
-var MAP = [
-        [ 0, 0, 0 ],
-        [ 0, 0, 0 ],
-        [ 0, 0, 0 ],
+enum PositionValue: String {
+    case Human = "X"
+    case Bot = "O"
+    case Empty = " "
+}
+
+static var MAP:[[PositionValue]] = [
+        [ .Empty, .Empty, .Empty ],
+        [ .Empty, .Empty, .Empty ],
+        [ .Empty, .Empty, .Empty ],
     ]
 
-func draw()
+static func draw()
     {
     for line in 0 ..< MAP.count
         {
@@ -119,19 +124,8 @@ func draw()
         for column in 0 ..< lineArray.count
             {
             let value = lineArray[ column ]
-            var valueSymbol = " "
 
-            if value < 0
-                {
-                valueSymbol = "X"
-                }
-
-            else if value > 0
-                {
-                valueSymbol = "O"
-                }
-
-            print( valueSymbol, terminator: "" )
+            print( value.rawValue, terminator: "" )
 
             if column + 1 != lineArray.count
                 {
@@ -155,7 +149,7 @@ func draw()
 /**
  * Make a play. Returns whether the play was valid or not.
  */
-func play( column: Int, _ line: Int ) -> Bool
+static func play( column: Int, _ line: Int, _ position: PositionValue ) -> Bool
     {
     if column < 0 || column > 2 ||
        line   < 0 || line   > 2
@@ -164,10 +158,10 @@ func play( column: Int, _ line: Int ) -> Bool
         return false
         }
 
-    if MAP[ line ][ column ] == 0
+    if MAP[ line ][ column ] == PositionValue.Empty
         {
-        MAP[ line ][ column ] = 1
-        print( "Played \(line + 1) \(column + 1) line/column." )
+        MAP[ line ][ column ] = position
+        print( "\(position) Played \(line + 1) \(column + 1) line/column." )
         return true
         }
 
@@ -177,7 +171,18 @@ func play( column: Int, _ line: Int ) -> Bool
         return false
         }
     }
+
+static func clear()
+    {
+    for line in 0 ..< MAP.count
+        {
+        for column in 0 ..< MAP[ line ].count
+            {
+            MAP[ line ][ column ] = PositionValue.Empty
+            }
+        }
+    }
 }
 
-
+    // start the game!
 start()

@@ -26,7 +26,7 @@ while true
 
     else
         {
-        var (column, line) = getPlayerMove( input )
+        var (line, column) = getPlayerMove( input )
 
         let result = Board.play( column, line, Board.PositionValue.Human )
 
@@ -42,7 +42,7 @@ while true
                 restart()
 
             case .Valid:
-                (column, line) = getBotMove()
+                (line, column) = getBotMove()
                 let result = Board.play( column, line, Board.PositionValue.Bot )
 
                 switch result
@@ -100,7 +100,7 @@ exit( 0 );
 }
 
 
-func getPlayerMove( input: String ) -> (Int, Int)
+func getPlayerMove( input: String ) -> (line: Int, column: Int)
 {
 let values = input.characters.split{ $0 == " " }.map( String.init )
 
@@ -114,12 +114,35 @@ if values.count >= 2
     }
 
     // user inputs values from 1 to 3, but we work in 0-based values
-return (column - 1, line - 1)
+return (line - 1, column - 1)
 }
 
 
-func getBotMove() -> (Int, Int)
+func getBotMove() -> (line: Int, column: Int)
 {
+    // see if there's lines with 2 in a row, so we can win the game
+let botPositions = Board.getPositions( Board.PositionValue.Bot )
+
+for position in botPositions
+    {
+    if let playPosition = Board.getEmptyPosition( position.line, position.column, Board.PositionValue.Bot )
+        {
+        return playPosition
+        }
+    }
+
+    // see if the opponent has 2 in a row, so we can deny it
+let humanPositions = Board.getPositions( Board.PositionValue.Human )
+
+for position in humanPositions
+    {
+    if let playPosition = Board.getEmptyPosition( position.line, position.column, Board.PositionValue.Human )
+        {
+        return playPosition
+        }
+    }
+
+    // if there's no values in a row, then just play at random
 let availablePositions = Board.getPositions( Board.PositionValue.Empty )
 
     // play on a random empty position
@@ -148,6 +171,15 @@ enum PlayResult {
     case Invalid    // invalid play, try again
     case GameWon    // game was won by the last move
     case GameDraw   // game was drawn by the last move
+}
+
+    // identifies which kind of line in a row was found
+enum Row {
+    case Horizontal
+    case Vertical
+    case LeftDiagonal
+    case RightDiagonal
+    case None
 }
 
 static var BOARD:[[PositionValue]] = [
@@ -192,64 +224,9 @@ static func play( column: Int, _ line: Int, _ value: PositionValue ) -> PlayResu
         print( "\(value) Played \(line + 1) \(column + 1) line/column." )
 
             // check if game is over
-            // check in same line
-        for a in 0 ..< SIZE
+        if Board.inARow( line, column, SIZE, value ) != .None
             {
-            if BOARD[ line ][ a ] != value
-                {
-                break
-                }
-
-                // means all elements in this line are of the same value
-            if a + 1 == SIZE
-                {
-                return PlayResult.GameWon
-                }
-            }
-
-            // check in same column
-        for a in 0 ..< SIZE
-            {
-            if BOARD[ a ][ column ] != value
-                {
-                break
-                }
-
-            if a + 1 == SIZE
-                {
-                return PlayResult.GameWon
-                }
-            }
-
-            // check in diagonal
-        if column == line
-            {
-            for a in 0 ..< SIZE
-                {
-                if BOARD[ a ][ a ] != value
-                    {
-                    break
-                    }
-
-                if a + 1 == SIZE
-                    {
-                    return PlayResult.GameWon
-                    }
-                }
-            }
-
-            // check other diagonal
-        for a in 0 ..< SIZE
-            {
-            if BOARD[ a ][ SIZE - 1 - a ] != value
-                {
-                break
-                }
-
-            if a + 1 == SIZE
-                {
-                return PlayResult.GameWon
-                }
+            return PlayResult.GameWon
             }
 
             // check if game draw
@@ -275,9 +252,85 @@ static func play( column: Int, _ line: Int, _ value: PositionValue ) -> PlayResu
         }
     }
 
-static func getPositions( type: PositionValue ) -> [(Int, Int)]
+/*
+ * Check if there's 2/3 positions in a row of the same value.
+ */
+static func inARow( line: Int, _ column: Int, _ howMany: Int, _ value: PositionValue ) -> Row
     {
-    var positions: [(Int, Int)] = []
+        // check in same line
+    var count = 0
+
+    for a in 0 ..< SIZE
+        {
+        if BOARD[ line ][ a ] == value
+            {
+            count += 1
+            }
+
+            // there are elements in a row of the same value (the amount specified)
+        if count == howMany
+            {
+            return Row.Horizontal
+            }
+        }
+
+        // check in same column
+    count = 0
+
+    for a in 0 ..< SIZE
+        {
+        if BOARD[ a ][ column ] == value
+            {
+            count += 1
+            }
+
+        if count == howMany
+            {
+            return Row.Vertical
+            }
+        }
+
+        // check in diagonal
+    if column == line
+        {
+        count = 0
+
+        for a in 0 ..< SIZE
+            {
+            if BOARD[ a ][ a ] == value
+                {
+                count += 1
+                }
+
+            if count == howMany
+                {
+                return Row.LeftDiagonal
+                }
+            }
+        }
+
+        // check other diagonal
+    count = 0
+
+    for a in 0 ..< SIZE
+        {
+        if BOARD[ a ][ SIZE - 1 - a ] == value
+            {
+            count += 1
+            }
+
+        if count == howMany
+            {
+            return Row.RightDiagonal
+            }
+        }
+
+    return Row.None
+    }
+
+static func getPositions( type: PositionValue ) -> [(line: Int, column: Int)]
+    {
+    var positions: [(line: Int, column: Int)] = []
 
     for line in 0 ..< BOARD.count
         {
@@ -285,12 +338,64 @@ static func getPositions( type: PositionValue ) -> [(Int, Int)]
             {
             if BOARD[ line ][ column ] == type
                 {
-                positions.append( (column, line) )
+                positions.append( (line, column) )
                 }
             }
         }
 
     return positions
+    }
+
+
+/*
+ * Find the empty position needed to complete a row.
+ */
+static func getEmptyPosition( refLine: Int, _ refColumn: Int, _ value: PositionValue ) -> (line: Int, column: Int)?
+    {
+    switch Board.inARow( refLine, refColumn, 2, value )
+        {
+            // find the empty position
+        case .Horizontal:
+            for column in 0 ..< SIZE
+                {
+                if BOARD[ refLine ][ column ] == PositionValue.Empty
+                    {
+                    return (refLine, column)
+                    }
+                }
+
+        case .Vertical:
+            for line in 0 ..< SIZE
+                {
+                if BOARD[ line ][ refColumn ] == PositionValue.Empty
+                    {
+                    return (line, refColumn)
+                    }
+                }
+
+        case .LeftDiagonal:
+            for a in 0 ..< SIZE
+                {
+                if BOARD[ a ][ a ] == PositionValue.Empty
+                    {
+                    return (a, a)
+                    }
+                }
+
+        case .RightDiagonal:
+            for a in 0 ..< SIZE
+                {
+                if BOARD[ a ][ SIZE - 1 - a ] == PositionValue.Empty
+                    {
+                    return (a, SIZE - 1 - a)
+                    }
+                }
+
+        default:
+            return nil
+        }
+
+    return nil
     }
 
 static func clear()

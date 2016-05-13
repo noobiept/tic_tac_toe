@@ -67,9 +67,12 @@ while true
 }
 
 
+/*
+ * Restart the game.
+ * It can optionally draw or not the board before clearing the game (to see how the game ended).
+ */
 func restart( drawBoard: Bool = true )
 {
-    // draw the board before clearing the game (to see how the game ended)
 if drawBoard
     {
     Board.draw()
@@ -94,12 +97,18 @@ print( "    h - Print this help message.\n" )
 }
 
 
+/*
+ * Exit the program.
+ */
 func quit()
 {
 exit( 0 );
 }
 
 
+/*
+ * Parse the user input, and return the played line/column.
+ */
 func getPlayerMove( input: String ) -> (line: Int, column: Int)
 {
 let values = input.characters.split{ $0 == " " }.map( String.init )
@@ -118,6 +127,10 @@ return (line - 1, column - 1)
 }
 
 
+/*
+ * Has the bot logic.
+ * It tries to complete a row (to win the game or deny the win to the opponent) or if not possible then it plays at random.
+ */
 func getBotMove() -> (line: Int, column: Int)
 {
     // see if there's lines with 2 in a row, so we can win the game
@@ -152,6 +165,9 @@ return availablePositions[ index ]
 }
 
 
+/*
+ * Return a random integer between 'min' and 'max' (inclusive).
+ */
 func getRandomInt( min: Int, _ max: Int ) -> Int
 {
 return Int( random() % (max - min + 1) ) + min
@@ -189,6 +205,10 @@ static var BOARD:[[PositionValue]] = [
     ]
 static let SIZE = 3
 
+
+/*
+ * Draw the board with the current played positions as well.
+ */
 static func draw()
     {
     print( "\n   #   #   " )
@@ -203,6 +223,7 @@ static func draw()
     print( " \(BOARD[2][0].rawValue) # \(BOARD[2][1].rawValue) # \(BOARD[2][2].rawValue) " )
     print( "   #   #   \n" )
     }
+
 
 /*
  * Make a play. After the play checks for the game ending condition.
@@ -251,6 +272,7 @@ static func play( column: Int, _ line: Int, _ value: PositionValue ) -> PlayResu
         return PlayResult.Invalid
         }
     }
+
 
 /*
  * Check if there's 2/3 positions in a row of the same value.
@@ -328,6 +350,10 @@ static func inARow( line: Int, _ column: Int, _ howMany: Int, _ value: PositionV
     return Row.None
     }
 
+
+/*
+ * Returns a list with all the positions of that position type.
+ */
 static func getPositions( type: PositionValue ) -> [(line: Int, column: Int)]
     {
     var positions: [(line: Int, column: Int)] = []
@@ -398,6 +424,10 @@ static func getEmptyPosition( refLine: Int, _ refColumn: Int, _ value: PositionV
     return nil
     }
 
+
+/*
+ * Clear/reset the board.
+ */
 static func clear()
     {
     for line in 0 ..< BOARD.count
@@ -409,6 +439,7 @@ static func clear()
         }
     }
 }
+
 
     // start the game!
 start()

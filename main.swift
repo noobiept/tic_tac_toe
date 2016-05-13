@@ -275,76 +275,108 @@ static func play( column: Int, _ line: Int, _ value: PositionValue ) -> PlayResu
 
 
 /*
- * Check if there's 2/3 positions in a row of the same value.
+ * Check if there's 2/3 positions in a row of the same value. When checking for 2, the other position needs to be empty to be considered.
  */
 static func inARow( line: Int, _ column: Int, _ howMany: Int, _ value: PositionValue ) -> Row
     {
         // check in same line
     var count = 0
+    var skip = false
 
     for a in 0 ..< SIZE
         {
-        if BOARD[ line ][ a ] == value
+        let currentValue = BOARD[ line ][ a ]
+        if currentValue == value
             {
             count += 1
             }
 
-            // there are elements in a row of the same value (the amount specified)
-        if count == howMany
+        else if currentValue != .Empty
             {
-            return Row.Horizontal
+            skip = true
+            break
             }
+        }
+
+        // there are elements in a row of the same value (the amount specified)
+    if !skip && count >= howMany
+        {
+        return Row.Horizontal
         }
 
         // check in same column
     count = 0
+    skip = false
 
     for a in 0 ..< SIZE
         {
-        if BOARD[ a ][ column ] == value
+        let currentValue = BOARD[ a ][ column ]
+        if currentValue == value
             {
             count += 1
             }
 
-        if count == howMany
+        else if currentValue != .Empty
             {
-            return Row.Vertical
+            skip = true
+            break
             }
+        }
+
+    if !skip && count >= howMany
+        {
+        return Row.Vertical
         }
 
         // check in diagonal
     if column == line
         {
         count = 0
+        skip = false
 
         for a in 0 ..< SIZE
             {
-            if BOARD[ a ][ a ] == value
+            let currentValue = BOARD[ a ][ a ]
+            if currentValue == value
                 {
                 count += 1
                 }
 
-            if count == howMany
+            else if currentValue != .Empty
                 {
-                return Row.LeftDiagonal
+                skip = true
+                break
                 }
+            }
+
+        if !skip && count >= howMany
+            {
+            return Row.LeftDiagonal
             }
         }
 
         // check other diagonal
     count = 0
+    skip = false
 
     for a in 0 ..< SIZE
         {
-        if BOARD[ a ][ SIZE - 1 - a ] == value
+        let currentValue = BOARD[ a ][ SIZE - 1 - a ]
+        if currentValue == value
             {
             count += 1
             }
 
-        if count == howMany
+        else if currentValue != .Empty
             {
-            return Row.RightDiagonal
+            skip = true
+            break
             }
+        }
+
+    if !skip && count >= howMany
+        {
+        return Row.RightDiagonal
         }
 
     return Row.None

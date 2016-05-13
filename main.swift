@@ -159,37 +159,17 @@ static let SIZE = 3
 
 static func draw()
     {
-    print()
-
-    for line in 0 ..< BOARD.count
-        {
-        let lineArray = BOARD[ line ]
-
-        for column in 0 ..< lineArray.count
-            {
-            let value = lineArray[ column ]
-
-            print( value.rawValue, terminator: "" )
-
-            if column + 1 != lineArray.count
-                {
-                print( "#", terminator: "" )
-                }
-
-            else
-                {
-                print()
-                }
-            }
-
-            // if not the last element
-        if line + 1 != BOARD.count
-            {
-            print( "#####" )
-            }
-        }
-
-    print()
+    print( "\n   #   #   " )
+    print( " \(BOARD[0][0].rawValue) # \(BOARD[0][1].rawValue) # \(BOARD[0][2].rawValue) " )
+    print( "   #   #   " )
+    print( "###########" )
+    print( "   #   #   " )
+    print( " \(BOARD[1][0].rawValue) # \(BOARD[1][1].rawValue) # \(BOARD[1][2].rawValue) " )
+    print( "   #   #   " )
+    print( "###########" )
+    print( "   #   #   " )
+    print( " \(BOARD[2][0].rawValue) # \(BOARD[2][1].rawValue) # \(BOARD[2][2].rawValue) " )
+    print( "   #   #   \n" )
     }
 
 /*

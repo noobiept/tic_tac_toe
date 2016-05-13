@@ -10,14 +10,13 @@ help()
 
 let options = [
     "q": quit,
-    "r": restart,
+    "r": { restart( false ) },
     "h": help
 ]
 
 while true
     {
     Board.draw()
-
     let input = readLine( stripNewline: true ) ?? ""
 
     if let optionsFunc = options[ input ]
@@ -68,8 +67,15 @@ while true
 }
 
 
-func restart()
+func restart( drawBoard: Bool = true )
 {
+    // draw the board before clearing the game (to see how the game ended)
+if drawBoard
+    {
+    Board.draw()
+    }
+
+print( "Restarting.." )
 Board.clear()
 }
 
@@ -153,6 +159,8 @@ static let SIZE = 3
 
 static func draw()
     {
+    print()
+
     for line in 0 ..< BOARD.count
         {
         let lineArray = BOARD[ line ]
@@ -180,6 +188,8 @@ static func draw()
             print( "#####" )
             }
         }
+
+    print()
     }
 
 /*

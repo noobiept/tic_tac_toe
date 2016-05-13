@@ -16,7 +16,7 @@ let options = [
 
 while true
     {
-    Map.draw()
+    Board.draw()
 
     let input = readLine( stripNewline: true ) ?? ""
 
@@ -29,7 +29,7 @@ while true
         {
         var (column, line) = getPlayerMove( input )
 
-        let result = Map.play( column, line, Map.PositionValue.Human )
+        let result = Board.play( column, line, Board.PositionValue.Human )
 
             // only continue the game if the player made a valid move
         switch result
@@ -44,7 +44,7 @@ while true
 
             case .Valid:
                 (column, line) = getBotMove()
-                let result = Map.play( column, line, Map.PositionValue.Bot )
+                let result = Board.play( column, line, Board.PositionValue.Bot )
 
                 switch result
                     {
@@ -70,7 +70,7 @@ while true
 
 func restart()
 {
-Map.clear()
+Board.clear()
 }
 
 
@@ -114,7 +114,7 @@ return (column - 1, line - 1)
 
 func getBotMove() -> (Int, Int)
 {
-let availablePositions = Map.getPositions( Map.PositionValue.Empty )
+let availablePositions = Board.getPositions( Board.PositionValue.Empty )
 
     // play on a random empty position
 let index = getRandomInt( 0, availablePositions.count - 1 )
@@ -129,7 +129,7 @@ return Int( random() % (max - min + 1) ) + min
 }
 
 
-class Map
+class Board
 {
 enum PositionValue: String {
     case Human = "X"
@@ -144,7 +144,7 @@ enum PlayResult {
     case GameDraw   // game was drawn by the last move
 }
 
-static var MAP:[[PositionValue]] = [
+static var BOARD:[[PositionValue]] = [
         [ .Empty, .Empty, .Empty ],
         [ .Empty, .Empty, .Empty ],
         [ .Empty, .Empty, .Empty ],
@@ -153,9 +153,9 @@ static let SIZE = 3
 
 static func draw()
     {
-    for line in 0 ..< MAP.count
+    for line in 0 ..< BOARD.count
         {
-        let lineArray = MAP[ line ]
+        let lineArray = BOARD[ line ]
 
         for column in 0 ..< lineArray.count
             {
@@ -175,7 +175,7 @@ static func draw()
             }
 
             // if not the last element
-        if line + 1 != MAP.count
+        if line + 1 != BOARD.count
             {
             print( "#####" )
             }
@@ -187,7 +187,7 @@ static func draw()
  * Game ends when one of the players has 3 positions in a row (horizontal, vertical or diagonal).
  * Game can draw when there are no more valid plays left.
  */
-static func play( column: Int, _ line: Int, _ position: PositionValue ) -> PlayResult
+static func play( column: Int, _ line: Int, _ value: PositionValue ) -> PlayResult
     {
     if column < 0 || column > 2 ||
        line   < 0 || line   > 2
@@ -196,16 +196,16 @@ static func play( column: Int, _ line: Int, _ position: PositionValue ) -> PlayR
         return PlayResult.Invalid
         }
 
-    if MAP[ line ][ column ] == PositionValue.Empty
+    if BOARD[ line ][ column ] == PositionValue.Empty
         {
-        MAP[ line ][ column ] = position
-        print( "\(position) Played \(line + 1) \(column + 1) line/column." )
+        BOARD[ line ][ column ] = value
+        print( "\(value) Played \(line + 1) \(column + 1) line/column." )
 
             // check if game is over
             // check in same line
         for a in 0 ..< SIZE
             {
-            if MAP[ line ][ a ] != position
+            if BOARD[ line ][ a ] != value
                 {
                 break
                 }
@@ -220,7 +220,7 @@ static func play( column: Int, _ line: Int, _ position: PositionValue ) -> PlayR
             // check in same column
         for a in 0 ..< SIZE
             {
-            if MAP[ a ][ column ] != position
+            if BOARD[ a ][ column ] != value
                 {
                 break
                 }
@@ -236,7 +236,7 @@ static func play( column: Int, _ line: Int, _ position: PositionValue ) -> PlayR
             {
             for a in 0 ..< SIZE
                 {
-                if MAP[ a ][ a ] != position
+                if BOARD[ a ][ a ] != value
                     {
                     break
                     }
@@ -251,7 +251,7 @@ static func play( column: Int, _ line: Int, _ position: PositionValue ) -> PlayR
             // check other diagonal
         for a in 0 ..< SIZE
             {
-            if MAP[ a ][ SIZE - 1 - a ] != position
+            if BOARD[ a ][ SIZE - 1 - a ] != value
                 {
                 break
                 }
@@ -268,7 +268,7 @@ static func play( column: Int, _ line: Int, _ position: PositionValue ) -> PlayR
             for column in 0 ..< SIZE
                 {
                     // not over yet, continue playing
-                if MAP[ line ][ column ] == PositionValue.Empty
+                if BOARD[ line ][ column ] == PositionValue.Empty
                     {
                     return PlayResult.Valid
                     }
@@ -289,11 +289,11 @@ static func getPositions( type: PositionValue ) -> [(Int, Int)]
     {
     var positions: [(Int, Int)] = []
 
-    for line in 0 ..< MAP.count
+    for line in 0 ..< BOARD.count
         {
-        for column in 0 ..< MAP[ line ].count
+        for column in 0 ..< BOARD[ line ].count
             {
-            if MAP[ line ][ column ] == type
+            if BOARD[ line ][ column ] == type
                 {
                 positions.append( (column, line) )
                 }
@@ -305,11 +305,11 @@ static func getPositions( type: PositionValue ) -> [(Int, Int)]
 
 static func clear()
     {
-    for line in 0 ..< MAP.count
+    for line in 0 ..< BOARD.count
         {
-        for column in 0 ..< MAP[ line ].count
+        for column in 0 ..< BOARD[ line ].count
             {
-            MAP[ line ][ column ] = PositionValue.Empty
+            BOARD[ line ][ column ] = PositionValue.Empty
             }
         }
     }

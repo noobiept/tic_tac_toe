@@ -29,26 +29,42 @@ while true
         {
         var (column, line) = getPlayerMove( input )
 
-            // user inputs values from 1 to 3, but we work in 0-based values
-        if Map.play( column - 1, line - 1, Map.PositionValue.Human )
-            {
-                // only continue the game if the player made a valid move
-            (column, line) = getBotMove()
-            Map.play( column, line, Map.PositionValue.Bot )
+        let result = Map.play( column, line, Map.PositionValue.Human )
 
-            if ( checkGameEnd() )
-                {
+            // only continue the game if the player made a valid move
+        switch result
+            {
+            case .GameWon:
+                print( "Player Won!" )
                 restart()
-                }
+
+            case .GameDraw:
+                print( "Game Drawn!" )
+                restart()
+
+            case .Valid:
+                (column, line) = getBotMove()
+                let result = Map.play( column, line, Map.PositionValue.Bot )
+
+                switch result
+                    {
+                    case .GameWon:
+                        print( "Bot Won!" )
+                        restart()
+
+                    case .GameDraw:
+                        print( "Game Drawn!" )
+                        restart()
+
+                    default:
+                        ()
+                    }
+
+            default:
+                ()
             }
         }
     }
-}
-
-
-func checkGameEnd() -> Bool
-{
-return false
 }
 
 
@@ -91,16 +107,19 @@ if values.count >= 2
     column = Int( values[ 1 ] ) ?? -1
     }
 
-return (column, line)
+    // user inputs values from 1 to 3, but we work in 0-based values
+return (column - 1, line - 1)
 }
 
 
 func getBotMove() -> (Int, Int)
 {
-let column = getRandomInt( 0, 2 )
-let line = getRandomInt( 0, 2 )
+let availablePositions = Map.getPositions( Map.PositionValue.Empty )
 
-return (column, line)
+    // play on a random empty position
+let index = getRandomInt( 0, availablePositions.count - 1 )
+
+return availablePositions[ index ]
 }
 
 
@@ -118,11 +137,19 @@ enum PositionValue: String {
     case Empty = " "
 }
 
+enum PlayResult {
+    case Valid      // valid play, but game not over yet, continue playing
+    case Invalid    // invalid play, try again
+    case GameWon    // game was won by the last move
+    case GameDraw   // game was drawn by the last move
+}
+
 static var MAP:[[PositionValue]] = [
         [ .Empty, .Empty, .Empty ],
         [ .Empty, .Empty, .Empty ],
         [ .Empty, .Empty, .Empty ],
     ]
+static let SIZE = 3
 
 static func draw()
     {
@@ -156,29 +183,124 @@ static func draw()
     }
 
 /*
- * Make a play. Returns whether the play was valid or not.
+ * Make a play. After the play checks for the game ending condition.
+ * Game ends when one of the players has 3 positions in a row (horizontal, vertical or diagonal).
+ * Game can draw when there are no more valid plays left.
  */
-static func play( column: Int, _ line: Int, _ position: PositionValue ) -> Bool
+static func play( column: Int, _ line: Int, _ position: PositionValue ) -> PlayResult
     {
     if column < 0 || column > 2 ||
        line   < 0 || line   > 2
         {
         print( "Invalid play. The line/column values need to be between 1 and 3." )
-        return false
+        return PlayResult.Invalid
         }
 
     if MAP[ line ][ column ] == PositionValue.Empty
         {
         MAP[ line ][ column ] = position
         print( "\(position) Played \(line + 1) \(column + 1) line/column." )
-        return true
+
+            // check if game is over
+            // check in same line
+        for a in 0 ..< SIZE
+            {
+            if MAP[ line ][ a ] != position
+                {
+                break
+                }
+
+                // means all elements in this line are of the same value
+            if a + 1 == SIZE
+                {
+                return PlayResult.GameWon
+                }
+            }
+
+            // check in same column
+        for a in 0 ..< SIZE
+            {
+            if MAP[ a ][ column ] != position
+                {
+                break
+                }
+
+            if a + 1 == SIZE
+                {
+                return PlayResult.GameWon
+                }
+            }
+
+            // check in diagonal
+        if column == line
+            {
+            for a in 0 ..< SIZE
+                {
+                if MAP[ a ][ a ] != position
+                    {
+                    break
+                    }
+
+                if a + 1 == SIZE
+                    {
+                    return PlayResult.GameWon
+                    }
+                }
+            }
+
+            // check other diagonal
+        for a in 0 ..< SIZE
+            {
+            if MAP[ a ][ SIZE - 1 - a ] != position
+                {
+                break
+                }
+
+            if a + 1 == SIZE
+                {
+                return PlayResult.GameWon
+                }
+            }
+
+            // check if game draw
+        for line in 0 ..< SIZE
+            {
+            for column in 0 ..< SIZE
+                {
+                    // not over yet, continue playing
+                if MAP[ line ][ column ] == PositionValue.Empty
+                    {
+                    return PlayResult.Valid
+                    }
+                }
+            }
+
+        return PlayResult.GameDraw
         }
 
     else
         {
         print( "Position already taken." )
-        return false
+        return PlayResult.Invalid
         }
+    }
+
+static func getPositions( type: PositionValue ) -> [(Int, Int)]
+    {
+    var positions: [(Int, Int)] = []
+
+    for line in 0 ..< MAP.count
+        {
+        for column in 0 ..< MAP[ line ].count
+            {
+            if MAP[ line ][ column ] == type
+                {
+                positions.append( (column, line) )
+                }
+            }
+        }
+
+    return positions
     }
 
 static func clear()

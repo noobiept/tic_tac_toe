@@ -174,6 +174,22 @@ return Int( random() % (max - min + 1) ) + min
 }
 
 
+/*
+ * Return a new string that is padded with the given character at the end/right, if needed (depending on the specified length).
+ */
+func padRight( text: String, _ length: Int, _ padChar: Character = Character( " " ) ) -> String
+{
+let diff = length - text.characters.count
+
+if diff > 0
+    {
+    return text + String( count: diff, repeatedValue: padChar )
+    }
+
+return text
+}
+
+
 class Board
 {
 enum PositionValue: String {
@@ -242,7 +258,9 @@ static func play( column: Int, _ line: Int, _ value: PositionValue ) -> PlayResu
     if BOARD[ line ][ column ] == PositionValue.Empty
         {
         BOARD[ line ][ column ] = value
-        print( "\(value) Played \(line + 1) \(column + 1) line/column." )
+
+        let displayValue = padRight( String( value ), 5 )
+        print( "\(displayValue) played line \(line + 1) and column \(column + 1)." )
 
             // check if game is over
         if Board.inARow( line, column, SIZE, value ) != .None

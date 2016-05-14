@@ -1,3 +1,7 @@
+Tic-tac-toe console game written in swift.
+
+![Promotion Image](images/promotion1.png "Promotion Image")
+
 Bot Logic
 =========
 

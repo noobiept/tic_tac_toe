@@ -17,7 +17,7 @@ let options = [
 while true
     {
     Board.draw()
-    let input = readLine( stripNewline: true ) ?? ""
+    let input = readLine( strippingNewline: true ) ?? ""
 
     if let optionsFunc = options[ input ]
         {
@@ -71,7 +71,7 @@ while true
  * Restart the game.
  * It can optionally draw or not the board before clearing the game (to see how the game ended).
  */
-func restart( drawBoard: Bool = true )
+func restart( _ drawBoard: Bool = true )
 {
 if drawBoard
     {
@@ -109,7 +109,7 @@ exit( 0 );
 /*
  * Parse the user input, and return the played line/column.
  */
-func getPlayerMove( input: String ) -> (line: Int, column: Int)
+func getPlayerMove( _ input: String ) -> (line: Int, column: Int)
 {
 let values = input.characters.split{ $0 == " " }.map( String.init )
 
@@ -168,7 +168,7 @@ return availablePositions[ index ]
 /*
  * Return a random integer between 'min' and 'max' (inclusive).
  */
-func getRandomInt( min: Int, _ max: Int ) -> Int
+func getRandomInt( _ min: Int, _ max: Int ) -> Int
 {
 return Int( random() % (max - min + 1) ) + min
 }
@@ -177,13 +177,13 @@ return Int( random() % (max - min + 1) ) + min
 /*
  * Return a new string that is padded with the given character at the end/right, if needed (depending on the specified length).
  */
-func padRight( text: String, _ length: Int, _ padChar: Character = Character( " " ) ) -> String
+func padRight( _ text: String, _ length: Int, _ padString: String = " " ) -> String
 {
 let diff = length - text.characters.count
 
 if diff > 0
     {
-    return text + String( count: diff, repeatedValue: padChar )
+    return text + String( repeating: padString, count: diff )
     }
 
 return text
@@ -246,7 +246,7 @@ static func draw()
  * Game ends when one of the players has 3 positions in a row (horizontal, vertical or diagonal).
  * Game can draw when there are no more valid plays left.
  */
-static func play( column: Int, _ line: Int, _ value: PositionValue ) -> PlayResult
+static func play( _ column: Int, _ line: Int, _ value: PositionValue ) -> PlayResult
     {
     if column < 0 || column > 2 ||
        line   < 0 || line   > 2
@@ -259,7 +259,7 @@ static func play( column: Int, _ line: Int, _ value: PositionValue ) -> PlayResu
         {
         BOARD[ line ][ column ] = value
 
-        let displayValue = padRight( String( value ), 5 )
+        let displayValue = padRight( "\(value)", 5 )
         print( "\(displayValue) played line \(line + 1) and column \(column + 1)." )
 
             // check if game is over
@@ -295,7 +295,7 @@ static func play( column: Int, _ line: Int, _ value: PositionValue ) -> PlayResu
 /*
  * Check if there's 2/3 positions in a row of the same value. When checking for 2, the other position needs to be empty to be considered.
  */
-static func inARow( line: Int, _ column: Int, _ howMany: Int, _ value: PositionValue ) -> Row
+static func inARow( _ line: Int, _ column: Int, _ howMany: Int, _ value: PositionValue ) -> Row
     {
         // check in same line
     var count = 0
@@ -404,7 +404,7 @@ static func inARow( line: Int, _ column: Int, _ howMany: Int, _ value: PositionV
 /*
  * Returns a list with all the positions of that position type.
  */
-static func getPositions( type: PositionValue ) -> [(line: Int, column: Int)]
+static func getPositions( _ type: PositionValue ) -> [(line: Int, column: Int)]
     {
     var positions: [(line: Int, column: Int)] = []
 
@@ -426,7 +426,7 @@ static func getPositions( type: PositionValue ) -> [(line: Int, column: Int)]
 /*
  * Find the empty position needed to complete a row.
  */
-static func getEmptyPosition( refLine: Int, _ refColumn: Int, _ value: PositionValue ) -> (line: Int, column: Int)?
+static func getEmptyPosition( _ refLine: Int, _ refColumn: Int, _ value: PositionValue ) -> (line: Int, column: Int)?
     {
     switch Board.inARow( refLine, refColumn, 2, value )
         {

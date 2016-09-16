@@ -18,4 +18,4 @@ Run
 Dependencies
 ============
 
-- swift v2.2.1 on linux.
+- swift v3.0.0 on linux.

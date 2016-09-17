@@ -18,4 +18,4 @@ Run
 Dependencies
 ============
 
-- swift v3.0.0 on linux.
+- [swift](https://swift.org/) v3.0.0

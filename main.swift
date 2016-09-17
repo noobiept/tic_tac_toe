@@ -1,4 +1,8 @@
-import Glibc
+#if os(Linux)
+    import Glibc
+#else
+    import Darwin
+#endif
 
 
 /*
@@ -170,7 +174,13 @@ return availablePositions[ index ]
  */
 func getRandomInt( _ min: Int, _ max: Int ) -> Int
 {
-return Int( random() % (max - min + 1) ) + min
+let diff = max - min + 1
+
+#if os(Linux)
+    return min + Int( random() % diff )
+#else
+    return min + Int( arc4random_uniform( UInt32( diff ) ) )
+#endif
 }
 
 

@@ -14,7 +14,7 @@ help()
 
 let options = [
     "q": quit,
-    "r": { restart( false ) },
+    "r": { restart( drawBoard: false ) },
     "h": help
 ]
 
@@ -30,7 +30,7 @@ while true
 
     else
         {
-        let result = Board.play( getPlayerMove( input ), Board.PositionValue.human )
+        let result = Board.play( move: getPlayerMove( input: input ), value: Board.PositionValue.human )
 
             // only continue the game if the player made a valid move
         switch result
@@ -44,7 +44,7 @@ while true
                 restart()
 
             case .valid:
-                let result = Board.play( getBotMove(), Board.PositionValue.bot )
+                let result = Board.play( move: getBotMove(), value: Board.PositionValue.bot )
 
                 switch result
                     {
@@ -72,7 +72,7 @@ while true
  * Restart the game.
  * It can optionally draw or not the board before clearing the game (to see how the game ended).
  */
-func restart( _ drawBoard: Bool = true )
+func restart( drawBoard: Bool = true )
 {
 if drawBoard
     {
@@ -110,7 +110,7 @@ exit( 0 );
 /*
  * Parse the user input, and return the played line/column.
  */
-func getPlayerMove( _ input: String ) -> (line: Int, column: Int)?
+func getPlayerMove( input: String ) -> (line: Int, column: Int)?
 {
 let values = input.characters.flatMap { Int( String( $0 ) ) }
 
@@ -138,32 +138,32 @@ return nil
 func getBotMove() -> (line: Int, column: Int)
 {
     // see if there's lines with 2 in a row, so we can win the game
-let botPositions = Board.getPositions( Board.PositionValue.bot )
+let botPositions = Board.getPositions( type: Board.PositionValue.bot )
 
 for position in botPositions
     {
-    if let playPosition = Board.getEmptyPosition( position.line, position.column, Board.PositionValue.bot )
+    if let playPosition = Board.getEmptyPosition( refLine: position.line, refColumn: position.column, value: Board.PositionValue.bot )
         {
         return playPosition
         }
     }
 
     // see if the opponent has 2 in a row, so we can deny it
-let humanPositions = Board.getPositions( Board.PositionValue.human )
+let humanPositions = Board.getPositions( type: Board.PositionValue.human )
 
 for position in humanPositions
     {
-    if let playPosition = Board.getEmptyPosition( position.line, position.column, Board.PositionValue.human )
+    if let playPosition = Board.getEmptyPosition( refLine: position.line, refColumn: position.column, value: Board.PositionValue.human )
         {
         return playPosition
         }
     }
 
     // if there's no values in a row, then just play at random
-let availablePositions = Board.getPositions( Board.PositionValue.empty )
+let availablePositions = Board.getPositions( type: Board.PositionValue.empty )
 
     // play on a random empty position
-let index = getRandomInt( 0, availablePositions.count - 1 )
+let index = getRandomInt( min: 0, max: availablePositions.count - 1 )
 
 return availablePositions[ index ]
 }
@@ -172,7 +172,7 @@ return availablePositions[ index ]
 /*
  * Return a random integer between 'min' and 'max' (inclusive).
  */
-func getRandomInt( _ min: Int, _ max: Int ) -> Int
+func getRandomInt( min: Int, max: Int ) -> Int
 {
 let diff = max - min + 1
 
@@ -187,7 +187,7 @@ let diff = max - min + 1
 /*
  * Return a new string that is padded with the given character at the end/right, if needed (depending on the specified length).
  */
-func padRight( _ text: String, _ length: Int, _ padString: String = " " ) -> String
+func padRight( text: String, length: Int, padString: String = " " ) -> String
 {
 let diff = length - text.characters.count
 
@@ -256,7 +256,7 @@ static func draw()
  * Game ends when one of the players has 3 positions in a row (horizontal, vertical or diagonal).
  * Game can draw when there are no more valid plays left.
  */
-static func play( _ move: (line: Int, column: Int)?, _ value: PositionValue ) -> PlayResult
+static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> PlayResult
     {
     if move == nil
         {
@@ -271,11 +271,11 @@ static func play( _ move: (line: Int, column: Int)?, _ value: PositionValue ) ->
         {
         BOARD[ line ][ column ] = value
 
-        let displayValue = padRight( "\(value)", 5 )
+        let displayValue = padRight( text: "\(value)", length: 5 )
         print( "\(displayValue) played line \(line + 1) and column \(column + 1)." )
 
             // check if game is over
-        if Board.inARow( line, column, SIZE, value ) != .none
+        if Board.inARow( line: line, column: column, howMany: SIZE, value: value ) != .none
             {
             return PlayResult.gameWon
             }
@@ -307,7 +307,7 @@ static func play( _ move: (line: Int, column: Int)?, _ value: PositionValue ) ->
 /*
  * Check if there's 2/3 positions in a row of the same value. When checking for 2, the other position needs to be empty to be considered.
  */
-static func inARow( _ line: Int, _ column: Int, _ howMany: Int, _ value: PositionValue ) -> Row
+static func inARow( line: Int, column: Int, howMany: Int, value: PositionValue ) -> Row
     {
         // check in same line
     var count = 0
@@ -416,7 +416,7 @@ static func inARow( _ line: Int, _ column: Int, _ howMany: Int, _ value: Positio
 /*
  * Returns a list with all the positions of that position type.
  */
-static func getPositions( _ type: PositionValue ) -> [(line: Int, column: Int)]
+static func getPositions( type: PositionValue ) -> [(line: Int, column: Int)]
     {
     var positions: [(line: Int, column: Int)] = []
 
@@ -438,9 +438,9 @@ static func getPositions( _ type: PositionValue ) -> [(line: Int, column: Int)]
 /*
  * Find the empty position needed to complete a row.
  */
-static func getEmptyPosition( _ refLine: Int, _ refColumn: Int, _ value: PositionValue ) -> (line: Int, column: Int)?
+static func getEmptyPosition( refLine: Int, refColumn: Int, value: PositionValue ) -> (line: Int, column: Int)?
     {
-    switch Board.inARow( refLine, refColumn, 2, value )
+    switch Board.inARow( line: refLine, column: refColumn, howMany: 2, value: value )
         {
             // find the empty position
         case .horizontal:

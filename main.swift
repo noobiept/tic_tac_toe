@@ -21,7 +21,7 @@ let options = [
 while true
     {
     Board.draw()
-    let input = readLine( strippingNewline: true ) ?? ""
+    let input = readLine() ?? ""
 
     if let optionsFunc = options[ input ]
         {
@@ -30,9 +30,7 @@ while true
 
     else
         {
-        var (line, column) = getPlayerMove( input )
-
-        let result = Board.play( column, line, Board.PositionValue.Human )
+        let result = Board.play( getPlayerMove( input ), Board.PositionValue.Human )
 
             // only continue the game if the player made a valid move
         switch result
@@ -46,8 +44,7 @@ while true
                 restart()
 
             case .Valid:
-                (line, column) = getBotMove()
-                let result = Board.play( column, line, Board.PositionValue.Bot )
+                let result = Board.play( getBotMove(), Board.PositionValue.Bot )
 
                 switch result
                     {
@@ -113,21 +110,24 @@ exit( 0 );
 /*
  * Parse the user input, and return the played line/column.
  */
-func getPlayerMove( _ input: String ) -> (line: Int, column: Int)
+func getPlayerMove( _ input: String ) -> (line: Int, column: Int)?
 {
-let values = input.characters.split{ $0 == " " }.map( String.init )
-
-var line = -1
-var column = -1
+let values = input.characters.flatMap { Int( String( $0 ) ) }
 
 if values.count >= 2
     {
-    line = Int( values[ 0 ] ) ?? -1
-    column = Int( values[ 1 ] ) ?? -1
+    let line = values[ 0 ]
+    let column = values[ 1 ]
+
+    if column >= 1 && column <= 3 &&
+       line   >= 1 && line   <= 3
+        {
+            // user inputs values from 1 to 3, but we work in 0-based values
+        return (line - 1, column - 1)
+        }
     }
 
-    // user inputs values from 1 to 3, but we work in 0-based values
-return (line - 1, column - 1)
+return nil
 }
 
 
@@ -256,14 +256,16 @@ static func draw()
  * Game ends when one of the players has 3 positions in a row (horizontal, vertical or diagonal).
  * Game can draw when there are no more valid plays left.
  */
-static func play( _ column: Int, _ line: Int, _ value: PositionValue ) -> PlayResult
+static func play( _ move: (line: Int, column: Int)?, _ value: PositionValue ) -> PlayResult
     {
-    if column < 0 || column > 2 ||
-       line   < 0 || line   > 2
+    if move == nil
         {
         print( "Invalid play. The line/column values need to be between 1 and 3." )
         return PlayResult.Invalid
         }
+
+    let line = move!.line
+    let column = move!.column
 
     if BOARD[ line ][ column ] == PositionValue.Empty
         {

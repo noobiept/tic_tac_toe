@@ -14,7 +14,7 @@ help()
 
 let options = [
     "q": quit,
-    "r": { restart( drawBoard: false ) },
+    "r": restart,
     "h": help
 ]
 
@@ -35,30 +35,11 @@ while true
             // only continue the game if the player made a valid move
         switch result
             {
-            case .gameWon:
-                print( "Player Won!" )
-                restart()
-
-            case .gameDraw:
-                print( "Game Drawn!" )
-                restart()
-
             case .valid:
-                let result = Board.play( move: getBotMove(), value: Board.PositionValue.bot )
+                _ = Board.play( move: getBotMove(), value: Board.PositionValue.bot )
 
-                switch result
-                    {
-                    case .gameWon:
-                        print( "Bot Won!" )
-                        restart()
-
-                    case .gameDraw:
-                        print( "Game Drawn!" )
-                        restart()
-
-                    default:
-                        ()
-                    }
+            case .gameOver:
+                restart()
 
             default:
                 ()
@@ -70,15 +51,9 @@ while true
 
 /*
  * Restart the game.
- * It can optionally draw or not the board before clearing the game (to see how the game ended).
  */
-func restart( drawBoard: Bool = true )
+func restart()
 {
-if drawBoard
-    {
-    Board.draw()
-    }
-
 print( "Restarting.." )
 Board.clear()
 }
@@ -213,6 +188,7 @@ enum PlayResult {
     case invalid    // invalid play, try again
     case gameWon    // game was won by the last move
     case gameDraw   // game was drawn by the last move
+    case gameOver   // game is already over
 }
 
     // identifies which kind of line in a row was found
@@ -229,6 +205,7 @@ static var BOARD:[[PositionValue]] = [
         [ .empty, .empty, .empty ],
         [ .empty, .empty, .empty ],
     ]
+static var GAME_OVER = false
 static let SIZE = 3
 
 
@@ -258,6 +235,11 @@ static func draw()
  */
 static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> PlayResult
     {
+    if GAME_OVER
+        {
+        return PlayResult.gameOver
+        }
+
     if move == nil
         {
         print( "Invalid play. The line/column values need to be between 1 and 3." )
@@ -277,6 +259,9 @@ static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> Pla
             // check if game is over
         if Board.inARow( line: line, column: column, howMany: SIZE, value: value ) != .none
             {
+            print( "\n\(value) won!\nPress the enter key to restart." )
+            GAME_OVER = true
+
             return PlayResult.gameWon
             }
 
@@ -292,6 +277,9 @@ static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> Pla
                     }
                 }
             }
+
+        print( "\nGame Drawn!\nPress the enter key to restart." )
+        GAME_OVER = true
 
         return PlayResult.gameDraw
         }
@@ -499,6 +487,8 @@ static func clear()
             BOARD[ line ][ column ] = PositionValue.empty
             }
         }
+
+    GAME_OVER = false
     }
 }
 

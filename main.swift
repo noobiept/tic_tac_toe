@@ -30,29 +30,29 @@ while true
 
     else
         {
-        let result = Board.play( getPlayerMove( input ), Board.PositionValue.Human )
+        let result = Board.play( getPlayerMove( input ), Board.PositionValue.human )
 
             // only continue the game if the player made a valid move
         switch result
             {
-            case .GameWon:
+            case .gameWon:
                 print( "Player Won!" )
                 restart()
 
-            case .GameDraw:
+            case .gameDraw:
                 print( "Game Drawn!" )
                 restart()
 
-            case .Valid:
-                let result = Board.play( getBotMove(), Board.PositionValue.Bot )
+            case .valid:
+                let result = Board.play( getBotMove(), Board.PositionValue.bot )
 
                 switch result
                     {
-                    case .GameWon:
+                    case .gameWon:
                         print( "Bot Won!" )
                         restart()
 
-                    case .GameDraw:
+                    case .gameDraw:
                         print( "Game Drawn!" )
                         restart()
 
@@ -138,29 +138,29 @@ return nil
 func getBotMove() -> (line: Int, column: Int)
 {
     // see if there's lines with 2 in a row, so we can win the game
-let botPositions = Board.getPositions( Board.PositionValue.Bot )
+let botPositions = Board.getPositions( Board.PositionValue.bot )
 
 for position in botPositions
     {
-    if let playPosition = Board.getEmptyPosition( position.line, position.column, Board.PositionValue.Bot )
+    if let playPosition = Board.getEmptyPosition( position.line, position.column, Board.PositionValue.bot )
         {
         return playPosition
         }
     }
 
     // see if the opponent has 2 in a row, so we can deny it
-let humanPositions = Board.getPositions( Board.PositionValue.Human )
+let humanPositions = Board.getPositions( Board.PositionValue.human )
 
 for position in humanPositions
     {
-    if let playPosition = Board.getEmptyPosition( position.line, position.column, Board.PositionValue.Human )
+    if let playPosition = Board.getEmptyPosition( position.line, position.column, Board.PositionValue.human )
         {
         return playPosition
         }
     }
 
     // if there's no values in a row, then just play at random
-let availablePositions = Board.getPositions( Board.PositionValue.Empty )
+let availablePositions = Board.getPositions( Board.PositionValue.empty )
 
     // play on a random empty position
 let index = getRandomInt( 0, availablePositions.count - 1 )
@@ -203,31 +203,31 @@ return text
 class Board
 {
 enum PositionValue: String {
-    case Human = "X"
-    case Bot = "O"
-    case Empty = " "
+    case human = "X"
+    case bot = "O"
+    case empty = " "
 }
 
 enum PlayResult {
-    case Valid      // valid play, but game not over yet, continue playing
-    case Invalid    // invalid play, try again
-    case GameWon    // game was won by the last move
-    case GameDraw   // game was drawn by the last move
+    case valid      // valid play, but game not over yet, continue playing
+    case invalid    // invalid play, try again
+    case gameWon    // game was won by the last move
+    case gameDraw   // game was drawn by the last move
 }
 
     // identifies which kind of line in a row was found
 enum Row {
-    case Horizontal
-    case Vertical
-    case LeftDiagonal
-    case RightDiagonal
-    case None
+    case horizontal
+    case vertical
+    case leftDiagonal
+    case rightDiagonal
+    case none
 }
 
 static var BOARD:[[PositionValue]] = [
-        [ .Empty, .Empty, .Empty ],
-        [ .Empty, .Empty, .Empty ],
-        [ .Empty, .Empty, .Empty ],
+        [ .empty, .empty, .empty ],
+        [ .empty, .empty, .empty ],
+        [ .empty, .empty, .empty ],
     ]
 static let SIZE = 3
 
@@ -261,13 +261,13 @@ static func play( _ move: (line: Int, column: Int)?, _ value: PositionValue ) ->
     if move == nil
         {
         print( "Invalid play. The line/column values need to be between 1 and 3." )
-        return PlayResult.Invalid
+        return PlayResult.invalid
         }
 
     let line = move!.line
     let column = move!.column
 
-    if BOARD[ line ][ column ] == PositionValue.Empty
+    if BOARD[ line ][ column ] == PositionValue.empty
         {
         BOARD[ line ][ column ] = value
 
@@ -275,9 +275,9 @@ static func play( _ move: (line: Int, column: Int)?, _ value: PositionValue ) ->
         print( "\(displayValue) played line \(line + 1) and column \(column + 1)." )
 
             // check if game is over
-        if Board.inARow( line, column, SIZE, value ) != .None
+        if Board.inARow( line, column, SIZE, value ) != .none
             {
-            return PlayResult.GameWon
+            return PlayResult.gameWon
             }
 
             // check if game draw
@@ -286,20 +286,20 @@ static func play( _ move: (line: Int, column: Int)?, _ value: PositionValue ) ->
             for column in 0 ..< SIZE
                 {
                     // not over yet, continue playing
-                if BOARD[ line ][ column ] == PositionValue.Empty
+                if BOARD[ line ][ column ] == PositionValue.empty
                     {
-                    return PlayResult.Valid
+                    return PlayResult.valid
                     }
                 }
             }
 
-        return PlayResult.GameDraw
+        return PlayResult.gameDraw
         }
 
     else
         {
         print( "Position already taken." )
-        return PlayResult.Invalid
+        return PlayResult.invalid
         }
     }
 
@@ -321,7 +321,7 @@ static func inARow( _ line: Int, _ column: Int, _ howMany: Int, _ value: Positio
             count += 1
             }
 
-        else if currentValue != .Empty
+        else if currentValue != .empty
             {
             skip = true
             break
@@ -331,7 +331,7 @@ static func inARow( _ line: Int, _ column: Int, _ howMany: Int, _ value: Positio
         // there are elements in a row of the same value (the amount specified)
     if !skip && count >= howMany
         {
-        return Row.Horizontal
+        return Row.horizontal
         }
 
         // check in same column
@@ -346,7 +346,7 @@ static func inARow( _ line: Int, _ column: Int, _ howMany: Int, _ value: Positio
             count += 1
             }
 
-        else if currentValue != .Empty
+        else if currentValue != .empty
             {
             skip = true
             break
@@ -355,7 +355,7 @@ static func inARow( _ line: Int, _ column: Int, _ howMany: Int, _ value: Positio
 
     if !skip && count >= howMany
         {
-        return Row.Vertical
+        return Row.vertical
         }
 
         // check in diagonal
@@ -372,7 +372,7 @@ static func inARow( _ line: Int, _ column: Int, _ howMany: Int, _ value: Positio
                 count += 1
                 }
 
-            else if currentValue != .Empty
+            else if currentValue != .empty
                 {
                 skip = true
                 break
@@ -381,7 +381,7 @@ static func inARow( _ line: Int, _ column: Int, _ howMany: Int, _ value: Positio
 
         if !skip && count >= howMany
             {
-            return Row.LeftDiagonal
+            return Row.leftDiagonal
             }
         }
 
@@ -397,7 +397,7 @@ static func inARow( _ line: Int, _ column: Int, _ howMany: Int, _ value: Positio
             count += 1
             }
 
-        else if currentValue != .Empty
+        else if currentValue != .empty
             {
             skip = true
             break
@@ -406,10 +406,10 @@ static func inARow( _ line: Int, _ column: Int, _ howMany: Int, _ value: Positio
 
     if !skip && count >= howMany
         {
-        return Row.RightDiagonal
+        return Row.rightDiagonal
         }
 
-    return Row.None
+    return Row.none
     }
 
 
@@ -443,37 +443,37 @@ static func getEmptyPosition( _ refLine: Int, _ refColumn: Int, _ value: Positio
     switch Board.inARow( refLine, refColumn, 2, value )
         {
             // find the empty position
-        case .Horizontal:
+        case .horizontal:
             for column in 0 ..< SIZE
                 {
-                if BOARD[ refLine ][ column ] == PositionValue.Empty
+                if BOARD[ refLine ][ column ] == PositionValue.empty
                     {
                     return (refLine, column)
                     }
                 }
 
-        case .Vertical:
+        case .vertical:
             for line in 0 ..< SIZE
                 {
-                if BOARD[ line ][ refColumn ] == PositionValue.Empty
+                if BOARD[ line ][ refColumn ] == PositionValue.empty
                     {
                     return (line, refColumn)
                     }
                 }
 
-        case .LeftDiagonal:
+        case .leftDiagonal:
             for a in 0 ..< SIZE
                 {
-                if BOARD[ a ][ a ] == PositionValue.Empty
+                if BOARD[ a ][ a ] == PositionValue.empty
                     {
                     return (a, a)
                     }
                 }
 
-        case .RightDiagonal:
+        case .rightDiagonal:
             for a in 0 ..< SIZE
                 {
-                if BOARD[ a ][ SIZE - 1 - a ] == PositionValue.Empty
+                if BOARD[ a ][ SIZE - 1 - a ] == PositionValue.empty
                     {
                     return (a, SIZE - 1 - a)
                     }
@@ -496,7 +496,7 @@ static func clear()
         {
         for column in 0 ..< BOARD[ line ].count
             {
-            BOARD[ line ][ column ] = PositionValue.Empty
+            BOARD[ line ][ column ] = PositionValue.empty
             }
         }
     }

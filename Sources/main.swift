@@ -1,8 +1,4 @@
-#if os(Linux)
-    import Glibc
-#else
-    import Darwin
-#endif
+import Foundation
 
 
 /*
@@ -138,40 +134,9 @@ for position in humanPositions
 let availablePositions = Board.getPositions( type: Board.PositionValue.empty )
 
     // play on a random empty position
-let index = getRandomInt( min: 0, max: availablePositions.count - 1 )
+let index = Utilities.getRandomInt( min: 0, max: availablePositions.count - 1 )
 
 return availablePositions[ index ]
-}
-
-
-/*
- * Return a random integer between 'min' and 'max' (inclusive).
- */
-func getRandomInt( min: Int, max: Int ) -> Int
-{
-let diff = max - min + 1
-
-#if os(Linux)
-    return min + Int( random() % diff )
-#else
-    return min + Int( arc4random_uniform( UInt32( diff ) ) )
-#endif
-}
-
-
-/*
- * Return a new string that is padded with the given character at the end/right, if needed (depending on the specified length).
- */
-func padRight( text: String, length: Int, padString: String = " " ) -> String
-{
-let diff = length - text.characters.count
-
-if diff > 0
-    {
-    return text + String( repeating: padString, count: diff )
-    }
-
-return text
 }
 
 

@@ -83,7 +83,7 @@ static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> Pla
             // check if game is over
         if Board.inARow( line: line, column: column, howMany: SIZE, value: value ) != .none
             {
-            print( "\n\(valueStr) won!\nPress the enter key to restart." )
+            print( "\n\(valueStr) won!\nPress the 'enter' key to restart." )
             GAME_OVER = true
 
             return PlayResult.gameWon
@@ -102,7 +102,7 @@ static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> Pla
                 }
             }
 
-        print( "\nGame Drawn!\nPress the enter key to restart." )
+        print( "\nGame Drawn!\nPress the 'enter' key to restart." )
         GAME_OVER = true
 
         return PlayResult.gameDraw

@@ -12,8 +12,7 @@ This is not the perfect way to play, so its still possible to win the game (othe
 
 # Run #
 
-- `swift build` --- Build the game.
-- `.build/debug/tic_tac_toe`  -- Run it.
+`swift build && .build/debug/tic_tac_toe` --- Build an run the game.
 
 
 # Dependencies #

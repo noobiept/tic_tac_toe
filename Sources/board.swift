@@ -76,13 +76,14 @@ static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> Pla
         {
         BOARD[ line ][ column ] = value
 
-        let displayValue = Utilities.padRight( text: "\(value)", length: 5 )
+        let valueStr = String( describing: value ).capitalized
+        let displayValue = Utilities.padRight( text: valueStr, length: 5 )
         print( "\(displayValue) played line \(line + 1) and column \(column + 1)." )
 
             // check if game is over
         if Board.inARow( line: line, column: column, howMany: SIZE, value: value ) != .none
             {
-            print( "\n\(value) won!\nPress the enter key to restart." )
+            print( "\n\(valueStr) won!\nPress the enter key to restart." )
             GAME_OVER = true
 
             return PlayResult.gameWon

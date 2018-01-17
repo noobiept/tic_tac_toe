@@ -23,7 +23,7 @@ static func getRandomInt( min: Int, max: Int ) -> Int
  */
 static func padRight( text: String, length: Int, padString: String = " " ) -> String
     {
-    let diff = length - text.characters.count
+    let diff = length - text.count
 
     if diff > 0
         {

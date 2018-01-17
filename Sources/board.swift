@@ -83,7 +83,18 @@ static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> Pla
             // check if game is over
         if Board.inARow( line: line, column: column, howMany: SIZE, value: value ) != .none
             {
-            Print.victory( "\n\(valueStr) won!\nPress the 'enter' key to restart." )
+            let endMessage = "\n\(valueStr) won!\nPress the 'enter' key to restart."
+
+            if value == PositionValue.human
+                {
+                Print.victory( endMessage )
+                }
+
+            else
+                {
+                Print.defeat( endMessage )
+                }
+
             GAME_OVER = true
 
             return PlayResult.gameWon

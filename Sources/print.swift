@@ -8,7 +8,7 @@ class Print
  */
 static func board( _ text: String )
     {
-    print( text.yellow )
+    print( text.lightWhite )
     }
 
 
@@ -17,7 +17,7 @@ static func board( _ text: String )
  */
 static func system( _ text: String )
     {
-    print( text.blue )
+    print( text.lightBlue )
     }
 
 

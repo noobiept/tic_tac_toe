@@ -37,17 +37,17 @@ static let SIZE = 3
  */
 static func draw()
     {
-    print( "\n   #   #   " )
-    print( " \(BOARD[0][0].rawValue) # \(BOARD[0][1].rawValue) # \(BOARD[0][2].rawValue) " )
-    print( "   #   #   " )
-    print( "###########" )
-    print( "   #   #   " )
-    print( " \(BOARD[1][0].rawValue) # \(BOARD[1][1].rawValue) # \(BOARD[1][2].rawValue) " )
-    print( "   #   #   " )
-    print( "###########" )
-    print( "   #   #   " )
-    print( " \(BOARD[2][0].rawValue) # \(BOARD[2][1].rawValue) # \(BOARD[2][2].rawValue) " )
-    print( "   #   #   \n" )
+    Print.board( "\n   #   #   " )
+    Print.board( " \(BOARD[0][0].rawValue) # \(BOARD[0][1].rawValue) # \(BOARD[0][2].rawValue) " )
+    Print.board( "   #   #   " )
+    Print.board( "###########" )
+    Print.board( "   #   #   " )
+    Print.board( " \(BOARD[1][0].rawValue) # \(BOARD[1][1].rawValue) # \(BOARD[1][2].rawValue) " )
+    Print.board( "   #   #   " )
+    Print.board( "###########" )
+    Print.board( "   #   #   " )
+    Print.board( " \(BOARD[2][0].rawValue) # \(BOARD[2][1].rawValue) # \(BOARD[2][2].rawValue) " )
+    Print.board( "   #   #   \n" )
     }
 
 
@@ -65,7 +65,7 @@ static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> Pla
 
     if move == nil
         {
-        print( "Invalid play. The line/column values need to be between 1 and 3." )
+        Print.error( "Invalid play. The line/column values need to be between 1 and 3." )
         return PlayResult.invalid
         }
 
@@ -78,12 +78,12 @@ static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> Pla
 
         let valueStr = String( describing: value ).capitalized
         let displayValue = Utilities.padRight( text: valueStr, length: 5 )
-        print( "\(displayValue) played line \(line + 1) and column \(column + 1)." )
+        Print.system( "\(displayValue) played line \(line + 1) and column \(column + 1)." )
 
             // check if game is over
         if Board.inARow( line: line, column: column, howMany: SIZE, value: value ) != .none
             {
-            print( "\n\(valueStr) won!\nPress the 'enter' key to restart." )
+            Print.victory( "\n\(valueStr) won!\nPress the 'enter' key to restart." )
             GAME_OVER = true
 
             return PlayResult.gameWon
@@ -102,7 +102,7 @@ static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> Pla
                 }
             }
 
-        print( "\nGame Drawn!\nPress the 'enter' key to restart." )
+        Print.draw( "\nGame Drawn!\nPress the 'enter' key to restart." )
         GAME_OVER = true
 
         return PlayResult.gameDraw
@@ -110,7 +110,7 @@ static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> Pla
 
     else
         {
-        print( "Position already taken." )
+        Print.error( "Position already taken." )
         return PlayResult.invalid
         }
     }

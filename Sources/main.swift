@@ -1,4 +1,5 @@
 import Foundation
+import Rainbow
 
 
 /*
@@ -50,7 +51,7 @@ while true
  */
 func restart()
 {
-print( "Restarting.." )
+Print.system( "Restarting.." )
 Board.clear()
 }
 
@@ -60,12 +61,12 @@ Board.clear()
  */
 func help()
 {
-print( "\nTic-Tac-Toe Game!" )
-print( "Write the line and column you want to play (for example: \"1 3\" - first line and third column)." )
-print( "Available commands: " )
-print( "    q - Quit the program." )
-print( "    r - Restart the game." )
-print( "    h - Print this help message.\n" )
+Print.system( "\nTic-Tac-Toe Game!" )
+Print.system( "Write the line and column you want to play (for example: \"1 3\" - first line and third column)." )
+Print.system( "Available commands: " )
+Print.system( "    q - Quit the program." )
+Print.system( "    r - Restart the game." )
+Print.system( "    h - Print this help message.\n" )
 }
 
 

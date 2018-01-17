@@ -10,11 +10,6 @@ The bot first tries to complete a row, either to win the game or deny the win to
 This is not the perfect way to play, so its still possible to win the game (otherwise it would draw every time).
 
 
-# Run #
+# Commands #
 
-`swift build && .build/debug/tic_tac_toe` --- Build an run the game.
-
-
-# Dependencies #
-
-- [swift](https://swift.org/) v3.1
+- `swift run` --- Build and run the game.

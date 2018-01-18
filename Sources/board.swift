@@ -1,7 +1,7 @@
 class Board
 {
 enum PositionValue: String {
-    case human = "X"
+    case player = "X"
     case bot = "O"
     case empty = " "
 }
@@ -77,22 +77,20 @@ static func play( move: (line: Int, column: Int)?, value: PositionValue ) -> Pla
         BOARD[ line ][ column ] = value
 
         let valueStr = String( describing: value ).capitalized
-        let displayValue = Utilities.padRight( text: valueStr, length: 5 )
-        Print.system( "\(displayValue) played line \(line + 1) and column \(column + 1)." )
+        let displayValue = Utilities.padRight( text: valueStr, length: 6 )
+        Print.system( "\(displayValue) (\(value.rawValue)) - line \(line + 1) / column \(column + 1)." )
 
             // check if game is over
         if Board.inARow( line: line, column: column, howMany: SIZE, value: value ) != .none
             {
-            let endMessage = "\n\(valueStr) won!\nPress the 'enter' key to restart."
-
-            if value == PositionValue.human
+            if value == PositionValue.player
                 {
-                Print.victory( endMessage )
+                Print.victory( "\nYou've won!\nPress the 'enter' key to restart." )
                 }
 
             else
                 {
-                Print.defeat( endMessage )
+                Print.defeat( "\nYou've lost!\nPress the 'enter' key to restart." )
                 }
 
             GAME_OVER = true

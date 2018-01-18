@@ -27,7 +27,7 @@ while true
 
     else
         {
-        let result = Board.play( move: getPlayerMove( input: input ), value: Board.PositionValue.human )
+        let result = Board.play( move: getPlayerMove( input: input ), value: Board.PositionValue.player )
 
             // only continue the game if the player made a valid move
         switch result
@@ -121,11 +121,11 @@ for position in botPositions
     }
 
     // see if the opponent has 2 in a row, so we can deny it
-let humanPositions = Board.getPositions( type: Board.PositionValue.human )
+let playerPositions = Board.getPositions( type: Board.PositionValue.player )
 
-for position in humanPositions
+for position in playerPositions
     {
-    if let playPosition = Board.getEmptyPosition( refLine: position.line, refColumn: position.column, value: Board.PositionValue.human )
+    if let playPosition = Board.getEmptyPosition( refLine: position.line, refColumn: position.column, value: Board.PositionValue.player )
         {
         return playPosition
         }

@@ -84,7 +84,7 @@ exit( 0 );
  */
 func getPlayerMove( input: String ) -> (line: Int, column: Int)?
 {
-let values = input.flatMap { Int( String( $0 ) ) }
+let values = input.compactMap { Int( String( $0 ) ) }
 
 if values.count >= 2
     {

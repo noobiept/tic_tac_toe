@@ -1,0 +1,13 @@
+image: swift:4.2
+pipelines:
+  default:
+    - step:
+      script:
+        # install/update dependencies
+        - apt-get update
+
+        # build the project
+        - swift build --configuration release
+
+        # upload to the 'downloads' section
+        - curl -X POST "https://${BB_AUTH_STRING}@api.bitbucket.org/2.0/repositories/drk4/tic_tac_toe/downloads" --form files=@"./.build/release/tic_tac_toe"

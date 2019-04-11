@@ -1,13 +1,22 @@
-image: swift:4.2
+image: swift:5.0
 pipelines:
     default:
         - step:
             script:
             # install/update dependencies
             - apt-get update
+            - apt-get --yes install zip
+            - apt-get --yes install jq
 
-            # build the project
+            # get the current name/version of the project
+            - NAME=$(cat package.json | jq -er '.name')
+            - VERSION=$(cat package.json | jq -er '.version')
+
+            # build the project just to see if it works
             - swift build --configuration release
 
+            # zip the necessary code files
+            - zip $NAME-$VERSION.zip Sources/** Package.swift Package.resolved license.txt
+
             # upload to the 'downloads' section
-            - curl -X POST "https://${BB_AUTH_STRING}@api.bitbucket.org/2.0/repositories/drk4/tic_tac_toe/downloads" --form files=@"./.build/release/tic_tac_toe"
+            - curl -X POST "https://${BB_AUTH_STRING}@api.bitbucket.org/2.0/repositories/drk4/tic_tac_toe/downloads" --form files=@"$NAME-$VERSION.zip"

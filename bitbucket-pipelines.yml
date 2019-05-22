@@ -7,6 +7,7 @@ pipelines:
             - apt-get update
             - apt-get --yes install zip
             - apt-get --yes install jq
+            - apt-get --yes install curl
 
             # get the current name/version of the project
             - NAME=$(cat package.json | jq -er '.name')

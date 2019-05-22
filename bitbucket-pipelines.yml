@@ -15,9 +15,6 @@ pipelines:
             # build the project just to see if it works
             - swift build --configuration release
 
-            # check if the code is properly formatted
-            - .build/checkouts/SwiftFormat/CommandLineTool/swiftformat --lint ./Sources ./Package.swift
-
             # zip the necessary code files
             - zip $NAME-$VERSION.zip Sources/** Package.swift Package.resolved license.txt
 

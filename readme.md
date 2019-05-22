@@ -5,8 +5,8 @@
 
 # Installation #
 
-- brew tap drk4/homebrew-tap https://bitbucket.org/drk4/homebrew-tap/
-- brew install tic_tac_toe
+- `brew tap drk4/homebrew-tap https://bitbucket.org/drk4/homebrew-tap/`
+- `brew install tic_tac_toe`
 
 Then run the `tic_tac_toe` command in the terminal.
 

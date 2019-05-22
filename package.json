@@ -1,4 +1,7 @@
 {
     "name": "tic_tac_toe",
-    "version": "1.4.0"
+    "version": "1.4.1",
+    "scripts": {
+        "format": ".build/checkouts/SwiftFormat/CommandLineTool/swiftformat ./Sources ./Package.swift"
+    }
 }

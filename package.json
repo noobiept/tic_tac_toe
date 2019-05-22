@@ -2,6 +2,8 @@
     "name": "tic_tac_toe",
     "version": "1.4.1",
     "scripts": {
-        "format": ".build/checkouts/SwiftFormat/CommandLineTool/swiftformat ./Sources ./Package.swift"
+        "format": ".build/checkouts/SwiftFormat/CommandLineTool/swiftformat ./Sources ./Package.swift",
+        "format:check": ".build/checkouts/SwiftFormat/CommandLineTool/swiftformat --lint ./Sources ./Package.swift",
+        "build": "swift build --configuration release"
     }
 }

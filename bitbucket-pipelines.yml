@@ -7,18 +7,16 @@ pipelines:
             - apt-get update
             - apt-get --yes install zip
             - apt-get --yes install jq
-            - apt-get --yes install nodejs
-            - apt-get --yes install npm
 
             # get the current name/version of the project
             - NAME=$(cat package.json | jq -er '.name')
             - VERSION=$(cat package.json | jq -er '.version')
 
             # build the project just to see if it works
-            - npm run build
+            - swift build --configuration release
 
             # check if the code is properly formatted
-            - npm run format:check
+            - .build/checkouts/SwiftFormat/CommandLineTool/swiftformat --lint ./Sources ./Package.swift
 
             # zip the necessary code files
             - zip $NAME-$VERSION.zip Sources/** Package.swift Package.resolved license.txt

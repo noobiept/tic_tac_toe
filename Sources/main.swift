@@ -111,7 +111,7 @@ func getBotMove() -> (line: Int, column: Int) {
     let availablePositions = Board.getPositions(type: Board.PositionValue.empty)
 
     // play on a random empty position
-    let index = Utilities.getRandomInt(min: 0, max: availablePositions.count - 1)
+    let index = Int.random(in: 0 ..< availablePositions.count)
 
     return availablePositions[index]
 }
